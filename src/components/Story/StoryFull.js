@@ -747,6 +747,7 @@ class StoryFull extends React.Component {
           </span>
           )}
           </Tooltip>
+          
           <b>&nbsp;&nbsp;&middot;&nbsp;&nbsp;</b> <a href="#" onClick={() => {this.setState({shareModal: true})}}><ReactIcon.MdShare /> Share</a>
         </div>
         <Modal
