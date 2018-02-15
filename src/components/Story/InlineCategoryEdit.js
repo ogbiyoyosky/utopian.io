@@ -51,6 +51,7 @@ class InlineCategoryEdit extends React.Component {
 
     }
 
+
     render () {
         const types = this.props.types.map((type, idx) => (
             <option value={type.type} key={idx}>{type.slug}</option>

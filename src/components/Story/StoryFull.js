@@ -44,6 +44,7 @@ import * as R from 'ramda';
 import './StoryFull.less';
 
 
+
 @connect(
   state => ({
     authenticated: getIsAuthenticated(state),

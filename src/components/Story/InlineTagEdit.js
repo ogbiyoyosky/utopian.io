@@ -12,6 +12,7 @@ class InlineTagEdit extends React.Component {
             tags: [],
         }
 
+
         this.onInlineTagEditClick = this.onInlineTagEditClick.bind(this);
         this.addTag = this.addTag.bind(this);
 
