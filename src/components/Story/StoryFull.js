@@ -38,9 +38,11 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import Blog from './Blog';
 import Contribution from './Contribution';
+import InlineTagEdit from './InlineTagEdit';
 
 import * as R from 'ramda';
 import './StoryFull.less';
+
 
 @connect(
   state => ({
@@ -239,6 +241,7 @@ class StoryFull extends React.Component {
     const images = post.json_metadata.image;
     const tags = _.union(post.json_metadata.tags, [post.category]);
     const video = post.json_metadata.video;
+
     const isLogged = Object.keys(user).length;
     const isAuthor = isLogged && user.name === post.author;
     const inModeratorsObj = R.find(R.propEq('account', user.name))(moderators);
@@ -321,7 +324,6 @@ class StoryFull extends React.Component {
     const repository = metaData.repository;
     const postType = post.json_metadata.type;
     const alreadyChecked = isModerator && (post.reviewed || post.pending || post.flagged);
-    const unreviewed = !post.reviewed && !post.pending && !post.flagged;
     const mobileView = (window.innerWidth <= 736);
     const shortLong = (s, l) => {
       if (mobileView) {
@@ -345,7 +347,7 @@ class StoryFull extends React.Component {
       LivejournalShareButton,
       EmailShareButton,
     } = ShareButtons;
-  
+
     const FacebookIcon = generateShareIcon('facebook');
     const TwitterIcon = generateShareIcon('twitter');
     const GooglePlusIcon = generateShareIcon('google');
@@ -360,7 +362,7 @@ class StoryFull extends React.Component {
     const MailruIcon = generateShareIcon('mailru');
     const EmailIcon = generateShareIcon('email');
     const LivejournalIcon = generateShareIcon('livejournal');
-  
+
     const shareTitle = `${post.title} - Utopian.io`
     const shareUrl = "https://utopian.io/" + post.url;
 
@@ -383,20 +385,24 @@ class StoryFull extends React.Component {
             Please make sure this contribution meets the{' '}<Link to="/rules">Utopian Quality Standards</Link>.<br />
           </p> : null}
 
-          {isModerator && alreadyChecked ? 
+          {isModerator && alreadyChecked ?
           <div>
-            {!mobileView ? 
+            {!mobileView ?
             <span>
             <h3><center><Icon type="safety" /> Moderation Control </center></h3>
-            {<p><b>Moderated By: &nbsp;</b> <Link className="StoryFull__modlink" to={`/@${post.moderator}`}>@{post.moderator}</Link></p>}
+            {post.reviewed && <p><b>Status: &nbsp;</b> <Icon type="check-circle"/>&nbsp; Accepted <span className="smallBr"><br /></span> <b>Moderated By: &nbsp;</b> <Link className="StoryFull__modlink" to={`/@${post.moderator}`}>@{post.moderator}</Link></p>}
+            {post.flagged && <p><b>Status: &nbsp;</b> <Icon type="exclamation-circle"/>&nbsp; Hidden <span className="smallBr"><br /></span> <b>Moderated By: &nbsp;</b> <Link className="StoryFull__modlink" to={`/@${post.moderator}`}>@{post.moderator}</Link></p>}
+            {post.pending && <p><b>Status: &nbsp;</b> <Icon type="sync"/>&nbsp; Pending <span className="smallBr"><br/></span> <b>Moderated By: &nbsp;</b> <Link className="StoryFull__modlink" to={`/@${post.moderator}`}>@{post.moderator}</Link></p>}
             </span>
             :
             <span>
             <h3><center><Icon type="safety" /> Moderation  </center></h3>
-            {<p> <b>Mod: &nbsp;</b> <Link className="StoryFull__modlink" to={`/@${post.moderator}`}>@{post.moderator}</Link></p>}
+            {post.reviewed && <p> <Icon type="check-circle"/>&nbsp; Accepted <span className="smallBr"><br /></span> <b>Mod: &nbsp;</b> <Link className="StoryFull__modlink" to={`/@${post.moderator}`}>@{post.moderator}</Link></p>}
+            {post.flagged && <p> <Icon type="exclamation-circle"/>&nbsp; Hidden <span className="smallBr"><br /></span> <b>Mod: &nbsp;</b> <Link className="StoryFull__modlink" to={`/@${post.moderator}`}>@{post.moderator}</Link></p>}
+            {post.pending && <p> <Icon type="sync"/>&nbsp; Pending <span className="smallBr"><br/></span> <b>Mod: &nbsp;</b> <Link className="StoryFull__modlink" to={`/@${post.moderator}`}>@{post.moderator}</Link></p>}
             </span>
             }
-          </div> 
+          </div>
           : null}
 
           {isModerator ? <div>
@@ -443,25 +449,8 @@ class StoryFull extends React.Component {
             {!post.reviewed && <span className="floatRight"><BanUser intl={intl} user={post.author}/>&nbsp;&nbsp;</span>}
           </div> : null
           }
-        </div> : null}
 
-        <div className="StoryFull__info">
-          {!mobileView ? 
-          <span>
-            {post.reviewed && <p><b>Status: &nbsp;</b> <Icon type="check-circle"/>&nbsp; Accepted <span className="smallBr"><br /></span> </p>}
-            {post.flagged && <p><b>Status: &nbsp;</b> <Icon type="exclamation-circle"/>&nbsp; Hidden <span className="smallBr"><br /></span> </p>}
-            {post.pending && <p><b>Status: &nbsp;</b> <Icon type="sync"/>&nbsp; Pending <span className="smallBr"><br/></span> </p>}
-            {unreviewed && <p><b>Status: &nbsp;</b> <Icon type="eye-o"/>&nbsp; Not Reviewed <span className="smallBr"><br/></span> </p>}
-          </span>
-          :
-          <span>
-            {post.reviewed && <p> <Icon type="check-circle"/>&nbsp; Accepted <span className="smallBr"><br /></span> </p>}
-            {post.flagged && <p> <Icon type="exclamation-circle"/>&nbsp; Hidden <span className="smallBr"><br /></span> </p>}
-            {post.pending && <p> <Icon type="sync"/>&nbsp; Pending <span className="smallBr"><br/></span> </p>}
-            {unreviewed && <p> <Icon type="eye-o"/>&nbsp; Not Reviewed <span className="smallBr"><br/></span> </p>}
-          </span>
-          }
-        </div>
+        </div> : null}
 
         <Contribution
           type={postType}
@@ -473,6 +462,9 @@ class StoryFull extends React.Component {
           showFlagged={ post.flagged }
           showInProgress = { (!(post.reviewed || post.pending || post.flagged)) }
           fullMode={true}
+          post={post}
+          user={user}
+          isModerator={isModerator}
         />
 
         {/*postType === 'blog' && <Blog
@@ -530,7 +522,7 @@ class StoryFull extends React.Component {
           visible={this.state.moderatorCommentModal}
           title='Write a Moderator Comment'
           footer={false}
-          // okText='Done' 
+          // okText='Done'
           onCancel={() => {
             var mark = "verified";
             if (post.reviewed) {
@@ -676,7 +668,7 @@ class StoryFull extends React.Component {
               }
             >
               <span className="StoryFull__header__text__date">
-                <FormattedRelative value={`${post.created}Z`} /> 
+                <FormattedRelative value={`${post.created}Z`} />
               </span>
             </Tooltip>
           </div>
@@ -740,14 +732,22 @@ class StoryFull extends React.Component {
           />
         )}
         <div className="StoryFull__topics">
-          <Tooltip title={<span><b>Tags:</b> {this.tagString(tags)}</span>}>
-          {tags && tags.map(tag => 
-          <span>
-          <Topic key={tag} name={tag} />&nbsp;
-          </span>
-          )}
-          </Tooltip>
-          
+          {!isModerator ? (
+                <Tooltip title={<span><b>Tags:</b> {this.tagString(tags)}</span>}>
+                {tags && tags.map(tag =>
+                <span>
+                <Topic key={tag} name={tag} />&nbsp;
+                </span>
+                )}
+                </Tooltip>
+      		  ) :
+      		  (
+      			<InlineTagEdit
+      				post={post}
+      			/>
+      		  )
+          }
+
           <b>&nbsp;&nbsp;&middot;&nbsp;&nbsp;</b> <a href="#" onClick={() => {this.setState({shareModal: true})}}><ReactIcon.MdShare /> Share</a>
         </div>
         <Modal
@@ -850,6 +850,21 @@ class StoryFull extends React.Component {
           <br/>
           { this.state.modalCopied && <span>&nbsp;&nbsp;&nbsp;&nbsp;Copied</span> }
         </Modal>
+
+        {metaData.pullRequests && metaData.pullRequests.length > 0 && metaData.pullRequests[0].user ?
+          <div>
+            <h4><Icon type="github" /> Github Connection</h4>
+            <div className="StoryFull__pullrequests">
+              {metaData.pullRequests[0].user.avatar_url
+              && <Avatar username={metaData.pullRequests[0].user.avatar_url} size={45} /> }
+              <span>
+                <a target="_blank" href={`https://github.com/${metaData.pullRequests[0].user.account}`}>
+                  {metaData.pullRequests[0].user.account}
+                  </a>
+              </span>
+            </div>
+          </div>
+          : null}
 
         {metaData.pullRequests && metaData.pullRequests.length > 0 ?
           <div>

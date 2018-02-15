@@ -34,6 +34,7 @@
     }
   }
 
+
   .markPullRight {
     float: right !important;
   }
@@ -42,7 +43,7 @@
     color: white !important;
   }
 
-  
+
 
   &.task-ideas,
   &.ideas {
@@ -238,3 +239,32 @@
     background: @bg-blog;
   }
 }
+
+.Contribution .inline-category-edit-select option
+{
+	background: #333;
+}
+
+.inline-repo-edit,
+.inline-category-edit-select
+{
+    border-width: 0;
+    background: transparent;
+    color: @light-grey;
+}
+
+.inline-repo-edit-menu {
+	background: #333;
+}
+
+.Contribution.yesfull .inline-category-edit-select,
+.Contribution.yesfull .inline-repo-edit {
+	color: white;
+}
+
+.inline-repo-edit:hover,
+.inline-category-edit-select
+{
+    border-width: 1px;
+}
+

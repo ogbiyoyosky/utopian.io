@@ -20,6 +20,7 @@ import Blog from './Blog';
 import Contribution from './Contribution';
 import './Story.less';
 
+
 @injectIntl
 class Story extends React.Component {
   static propTypes = {
