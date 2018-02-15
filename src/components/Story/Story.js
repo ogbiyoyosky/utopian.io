@@ -36,6 +36,7 @@ class Story extends React.Component {
     saving: PropTypes.bool,
     ownPost: PropTypes.bool,
     sliderMode: PropTypes.oneOf(['on', 'off', 'auto']),
+    moderators: PropTypes.array,
     onFollowClick: PropTypes.func,
     onSaveClick: PropTypes.func,
     onReportClick: PropTypes.func,
@@ -99,7 +100,7 @@ class Story extends React.Component {
     return <span><b>Tags: &nbsp;&nbsp;</b>{ret}, <em>utopian-io</em></span>;
   }
 
-  tagNumber(tagList, number) { 
+  tagNumber(tagList, number) {
     if (!tagList) return <span></span>;
     const indexOfUtopian = tagList.indexOf("utopian-io");
     if (indexOfUtopian > -1) tagList.splice(indexOfUtopian, 1);
@@ -125,10 +126,16 @@ class Story extends React.Component {
       currentMedianHistoryPrice,
       ownPost,
       sliderMode,
+      moderators,
       defaultVotePercent,
       onLikeClick,
       onShareClick,
     } = this.props;
+
+    const isLogged = Object.keys(user).length;
+    const isAuthor = isLogged && user.name === post.author;
+    const inModeratorsObj = R.find(R.propEq('account', user.name))(moderators);
+    const isModerator = isLogged && inModeratorsObj && !isAuthor ? inModeratorsObj : false;
 
     const metaData = post.json_metadata;
     const repository = metaData.repository;
@@ -248,6 +255,9 @@ class Story extends React.Component {
             showFlagged={ post.flagged }
             showInProgress = { (!(post.reviewed || post.pending || post.flagged)) }
             fullMode={false}
+            post={post}
+            user={user}
+            isModerator={isModerator}
           />
 
          {/*postType === 'blog' && <Blog
@@ -274,24 +284,29 @@ class Story extends React.Component {
             </Link>
           </div>
           <div className="Story__postTags nomobile">
-            <Tooltip title={this.allTags(post.json_metadata.tags)}>
-              {(post.json_metadata.tags.length > 1) && <span>
-                <Tag className="Story__postTag">{this.tagNumber(post.json_metadata.tags, 0)}</Tag>
-              </span>}
-              {(post.json_metadata.tags.length >= 2) && <span>
-                <Tag className="Story__postTag">{this.tagNumber(post.json_metadata.tags, 1)}</Tag>
-              </span>}
-              {(post.json_metadata.tags.length >= 3) && <span>
-                <Tag className="Story__postTag">{this.tagNumber(post.json_metadata.tags, 2)}</Tag>
-              </span>}
-              {(post.json_metadata.tags.length >= 4) && <span>
-                <Tag className="Story__postTag">{this.tagNumber(post.json_metadata.tags, 3)}</Tag>
-              </span>}
-              {false && <span>
-                <Tag className="Story__postTag">utopian-io</Tag>
-              </span>}
-            </Tooltip>
-            {(post.json_metadata.tags.length >= 2) && <span><br/><br/></span>}
+          { !isModerator ? (
+                <Tooltip title={this.allTags(post.json_metadata.tags)}>
+                  {(post.json_metadata.tags.length > 1) && <span>
+                    <Tag className="Story__postTag">{this.tagNumber(post.json_metadata.tags, 0)}</Tag>
+                  </span>}
+                  {(post.json_metadata.tags.length >= 2) && <span>
+                    <Tag className="Story__postTag">{this.tagNumber(post.json_metadata.tags, 1)}</Tag>
+                  </span>}
+                  {(post.json_metadata.tags.length >= 3) && <span>
+                    <Tag className="Story__postTag">{this.tagNumber(post.json_metadata.tags, 2)}</Tag>
+                  </span>}
+                  {(post.json_metadata.tags.length >= 4) && <span>
+                    <Tag className="Story__postTag">{this.tagNumber(post.json_metadata.tags, 3)}</Tag>
+                  </span>}
+                  {false && <span>
+                    <Tag className="Story__postTag">utopian-io</Tag>
+                  </span>}
+                </Tooltip>
+    			) : (
+    			<InlineTagEdit
+    				post={post}
+    			/>
+    )}            {(post.json_metadata.tags.length >= 2) && <span><br/><br/></span>}
           </div>
           <div className="Story__user Story__firstLine">
             <Link to={`/@${post.author}`}>
@@ -341,5 +356,3 @@ class Story extends React.Component {
 }
 
 export default Story;
-
-

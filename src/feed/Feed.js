@@ -39,6 +39,7 @@ import './Feed.less';
     reblogList: getRebloggedList(state),
     pendingReblogs: getPendingReblogs(state),
     sliderMode: getVotingPower(state),
+    moderators: state.moderators,
     rewardFund: getRewardFund(state),
     currentMedianHistoryPrice: getCurrentMedianHistoryPrice(state),
     defaultVotePercent: getVotePercent(state),
@@ -71,6 +72,7 @@ export default class Feed extends React.Component {
     currentMedianHistoryPrice: PropTypes.shape().isRequired,
     defaultVotePercent: PropTypes.number.isRequired,
     sliderMode: PropTypes.oneOf(['on', 'off', 'auto']),
+    moderators: PropTypes.array,
     isFetching: PropTypes.bool,
     hasMore: PropTypes.bool,
     editPost: PropTypes.func,
@@ -189,6 +191,7 @@ export default class Feed extends React.Component {
                 onFollowClick={this.handleFollowClick}
                 onEditClick={this.handleEditClick}
                 sliderMode={sliderMode}
+                moderators={moderators}
                 rewardFund={rewardFund}
                 currentMedianHistoryPrice={currentMedianHistoryPrice}
                 defaultVotePercent={defaultVotePercent}
@@ -216,6 +219,7 @@ export default class Feed extends React.Component {
                   onFollowClick={this.handleFollowClick}
                   onEditClick={this.handleEditClick}
                   sliderMode={sliderMode}
+                  moderators={moderators}
                   rewardFund={rewardFund}
                   currentMedianHistoryPrice={currentMedianHistoryPrice}
                   defaultVotePercent={defaultVotePercent}
@@ -243,6 +247,7 @@ export default class Feed extends React.Component {
                   onFollowClick={this.handleFollowClick}
                   onEditClick={this.handleEditClick}
                   sliderMode={sliderMode}
+                  moderators={moderators}
                   rewardFund={rewardFund}
                   currentMedianHistoryPrice={currentMedianHistoryPrice}
                   defaultVotePercent={defaultVotePercent}
